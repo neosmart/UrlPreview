@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace NeoSmart.FriendlyUrl
+namespace NeoSmart.UrlPreview
 {
     public class UrlPreview
     {

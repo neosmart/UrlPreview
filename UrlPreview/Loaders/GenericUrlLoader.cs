@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace NeoSmart.FriendlyUrl.Loaders
+namespace NeoSmart.UrlPreview.Loaders
 {
     class GenericUrlLoader : UrlLoader
     {

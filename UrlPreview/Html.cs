@@ -8,7 +8,7 @@ using System.Threading;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace NeoSmart.FriendlyUrl
+namespace NeoSmart.UrlPreview
 {
     public class Html
     {

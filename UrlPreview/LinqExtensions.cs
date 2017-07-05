@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace NeoSmart.FriendlyUrl
+namespace NeoSmart.UrlPreview
 {
     static class LinqExtensions
     {

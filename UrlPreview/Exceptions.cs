@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace NeoSmart.FriendlyUrl
+namespace NeoSmart.UrlPreview
 {
-    public class FriendlyUrlException : Exception
+    public class UrlPreviewException : Exception
     {
-        public FriendlyUrlException(string message = "", Exception innerException = null)
+        public UrlPreviewException(string message = "", Exception innerException = null)
             : base(message, innerException)
         { }
     }
