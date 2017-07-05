@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.3</TargetFramework>
+    <AssemblyName>NeoSmart.UrlPreview</AssemblyName>
+    <RootNamespace>NeoSmart.UrlPreview</RootNamespace>
+    <PackageId>UrlPreview</PackageId>
+    <Version>0.1</Version>
+    <Authors>NeoSmart Technologies, Mahmoud Al-Qudsi</Authors>
+    <Company>NeoSmart Technologies</Company>
+    <Product>UrlPreview</Product>
+    <Description>A library to generate URL previews for friendly URLs.</Description>
+    <Copyright>Copyright NeoSmart Technologies 2017</Copyright>
+    <PackageLicenseUrl>https://cdn.rawgit.com/neosmart/UrlPreview/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/neosmart/UrlPreview/</PackageProjectUrl>
+    <PackageIconUrl>https://cdn.rawgit.com/neosmart/UrlPreview/master/UrlPreview.png</PackageIconUrl>
+    <RepositoryUrl>https://github.com/neosmart/UrlPreview/</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>url, preview, html, links</PackageTags>
+    <PackageReleaseNotes>Initial release. Page snippets/summaries not yet implemented.</PackageReleaseNotes>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="HtmlAgilityPack" Version="1.5.0" />
+  </ItemGroup>
+
+</Project>
