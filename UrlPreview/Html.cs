@@ -84,7 +84,7 @@ namespace NeoSmart.UrlPreview
                 _document.LoadHtml(UnparsedHtml);
 
                 //ExtractAllTags();
-                ExtractTitle();
+                HtmlTitle = ExtractTitle();
 
                 return true;
             }
