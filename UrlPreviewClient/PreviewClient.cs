@@ -20,10 +20,24 @@ namespace UrlPreviewClient
             }
         }
 
+        private void InvalidUrl()
+        {
+            Console.WriteLine("An invalid or unsupported URL was entered!");
+        }
+
         private async Task Preview(string url)
         {
-            var preview = new UrlPreview(url);
-            await preview.GetPreviewAsync();
+            UrlPreview preview;
+            try
+            {
+                preview = new UrlPreview(url);
+                await preview.GetPreviewAsync();
+            }
+            catch (UriFormatException)
+            {
+                InvalidUrl();
+                return;
+            }
             var serialized = JsonConvert.SerializeObject(preview, Formatting.Indented);
             Console.WriteLine(serialized);
         }
