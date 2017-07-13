@@ -91,7 +91,7 @@ namespace NeoSmart.UrlPreview
             catch (Exception ex)
             {
                 Debug.WriteLine($"Exception loading {uri.ToString()}: {ex.ToString()}");
-                return false;
+                throw;
             }
         }
 

@@ -5,14 +5,14 @@ namespace NeoSmart.UrlPreview
 {
     public class UrlPreview
     {
-        public string ImageUrl { get; set; }
-        public string Title { get; set; }
-        public string Snippet { get; set; }
-        public Uri Uri => _uri;
-        public string Url => _uri.ToString();
+        public Uri Uri { get; private set; }
+        public string Url => Uri.ToString();
         public string ContentType { get; private set; }
 
-        private Uri _uri;
+        public UrlPreview()
+        {
+        }
+
         public UrlPreview(Uri uri)
         {
             if (uri.Scheme.ToLower() != "http" && uri.Scheme.ToLower() != "https")
@@ -20,27 +20,35 @@ namespace NeoSmart.UrlPreview
                 throw new UnsupportedUrlSchemeException();
             }
 
-            _uri = uri;
+            Uri = uri;
         }
 
         public UrlPreview(string uri)
             : this(new Uri(uri))
         { }
 
-        public async Task<UrlPreview> GetPreviewAsync()
+        public async Task<PreviewResult> GetPreviewAsync()
         {
-            var html = new Html();
-            if (!await html.LoadAsync(_uri))
+            try
             {
-                return null;
+                var html = new Html();
+                await html.LoadAsync(Uri);
+
+                ContentType = html.ContentType;
+
+                UrlLoader urlLoader = new Loaders.GenericUrlLoader(html);
+
+                return new PreviewResult
+                {
+                    Url = Uri,
+                    Title = await urlLoader.ExtractPageTitleAsync(),
+                    ImageUrl = await urlLoader.ExtractThumbnailAsync()
+                };
             }
-            ContentType = html.ContentType;
-
-            UrlLoader urlLoader = new Loaders.GenericUrlLoader(html);
-            Title = await urlLoader.ExtractPageTitleAsync();
-            ImageUrl = await urlLoader.ExtractThumbnailAsync();
-
-            return this;
+            catch
+            {
+                return default(PreviewResult);
+            }
         }
     }
 }

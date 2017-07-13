@@ -27,17 +27,18 @@ namespace UrlPreviewClient
 
         private async Task Preview(string url)
         {
-            UrlPreview preview;
+            PreviewResult preview;
             try
             {
-                preview = new UrlPreview(url);
-                await preview.GetPreviewAsync();
+                var previewer = new UrlPreview(url);
+                preview = await previewer.GetPreviewAsync();
             }
             catch (UriFormatException)
             {
                 InvalidUrl();
                 return;
             }
+
             var serialized = JsonConvert.SerializeObject(preview, Formatting.Indented);
             Console.WriteLine(serialized);
         }
