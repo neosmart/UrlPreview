@@ -5,11 +5,11 @@
     <AssemblyName>NeoSmart.UrlPreview</AssemblyName>
     <RootNamespace>NeoSmart.UrlPreview</RootNamespace>
     <PackageId>UrlPreview</PackageId>
-    <Version>0.1.1</Version>
+    <Version>0.2</Version>
     <Authors>NeoSmart Technologies, Mahmoud Al-Qudsi</Authors>
     <Company>NeoSmart Technologies</Company>
     <Product>UrlPreview</Product>
-    <Description>A library to generate URL previews for friendly URLs.</Description>
+    <Description>A library to generate URL previews for friendly URLs, getting the title, thumbnail, and a short description.</Description>
     <Copyright>Copyright NeoSmart Technologies 2017</Copyright>
     <PackageLicenseUrl>https://cdn.rawgit.com/neosmart/UrlPreview/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/neosmart/UrlPreview/</PackageProjectUrl>
