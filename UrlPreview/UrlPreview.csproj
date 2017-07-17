@@ -5,7 +5,7 @@
     <AssemblyName>NeoSmart.UrlPreview</AssemblyName>
     <RootNamespace>NeoSmart.UrlPreview</RootNamespace>
     <PackageId>UrlPreview</PackageId>
-    <Version>0.2</Version>
+    <Version>0.2.1</Version>
     <Authors>NeoSmart Technologies, Mahmoud Al-Qudsi</Authors>
     <Company>NeoSmart Technologies</Company>
     <Product>UrlPreview</Product>
@@ -17,8 +17,10 @@
     <RepositoryUrl>https://github.com/neosmart/UrlPreview/</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>url, preview, html, links</PackageTags>
-    <PackageReleaseNotes>Fixed blank Html.HtmlTitle property</PackageReleaseNotes>
+    <PackageReleaseNotes>Support for cancellation tokens</PackageReleaseNotes>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <AssemblyVersion>0.2.1.0</AssemblyVersion>
+    <FileVersion>0.2.1.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
