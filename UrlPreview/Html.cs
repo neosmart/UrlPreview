@@ -42,6 +42,7 @@ namespace NeoSmart.UrlPreview
                 using (var wc = new HttpClient(handler))
                 using (var response = await wc.GetAsyncRedirect(uri, _cancel))
                 {
+                    cancel?.ThrowIfCancellationRequested();
                     if (!response.IsSuccessStatusCode)
                     {
                         throw new UrlLoadFailureException((int)response.StatusCode);
@@ -59,6 +60,7 @@ namespace NeoSmart.UrlPreview
                     using (var content = response.Content)
                     using (var responseStream = await content.ReadAsStreamAsync())
                     {
+                        cancel?.ThrowIfCancellationRequested();
                         ContentType = content.Headers.ContentType?.MediaType;
                         StringBuilder html = new StringBuilder((int)(Math.Min(content.Headers.ContentLength ?? 4 * 1024, (long)maxRead)));
                         var buffer = new byte[4 * 1024];
@@ -66,6 +68,7 @@ namespace NeoSmart.UrlPreview
                         int totalRead = 0;
                         while ((bytesRead = await responseStream.ReadAsync(buffer, 0, buffer.Length, _cancel)) > 0)
                         {
+                            cancel?.ThrowIfCancellationRequested();
                             html.Append(Encoding.UTF8.GetString(buffer, 0, bytesRead));
                             totalRead += bytesRead;
 

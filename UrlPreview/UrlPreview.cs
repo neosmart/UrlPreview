@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace NeoSmart.UrlPreview
@@ -27,12 +28,13 @@ namespace NeoSmart.UrlPreview
             : this(new Uri(uri))
         { }
 
-        public async Task<PreviewResult> GetPreviewAsync()
+        public async Task<PreviewResult> GetPreviewAsync(CancellationToken? cancel = null)
         {
             try
             {
                 var html = new Html();
-                await html.LoadAsync(Uri);
+                await html.LoadAsync(Uri, cancel);
+                cancel?.ThrowIfCancellationRequested();
 
                 ContentType = html.ContentType;
 
@@ -44,6 +46,10 @@ namespace NeoSmart.UrlPreview
                     Title = await urlLoader.ExtractPageTitleAsync(),
                     ImageUrl = await urlLoader.ExtractThumbnailAsync()
                 };
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
             }
             catch
             {
