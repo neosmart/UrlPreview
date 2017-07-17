@@ -40,56 +40,68 @@ namespace NeoSmart.UrlPreview
                 //We must manually redirect to avoid this issue
                 using (var handler = new HttpClientHandler() { AllowAutoRedirect = false })
                 using (var wc = new HttpClient(handler))
-                using (var response = await wc.GetAsyncRedirect(uri, _cancel))
                 {
-                    cancel?.ThrowIfCancellationRequested();
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        throw new UrlLoadFailureException((int)response.StatusCode);
-                    }
+                    wc.DefaultRequestHeaders.Clear();
+                    wc.DefaultRequestHeaders.Add("Accept-Encoding", "gzip, deflate");
+                    wc.DefaultRequestHeaders.Add("Accept-Language", "en-US,en;q=0.8,fr;q=0.6,de;q=0.4");
+                    wc.DefaultRequestHeaders.Add("Cache-Control", "max-age=0");
+                    wc.DefaultRequestHeaders.Add("DNT", "1");
+                    wc.DefaultRequestHeaders.Add("Host", uri.Host);
+                    wc.DefaultRequestHeaders.Add("Referer", $"{uri.Scheme}://{uri.Host}/");
+                    wc.DefaultRequestHeaders.Add("User-Agent", @"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36");
+                    wc.DefaultRequestHeaders.Add("Upgrade-Insecure-Requests", "1");
 
-                    if (response.Headers.TryGetValues("Content-Type", out var contentTypes))
-                    {
-                        if (contentTypes.FirstOrDefault() != "text/html")
-                        {
-                            //not an html document
-                            return false;
-                        }
-                    }
-
-                    using (var content = response.Content)
-                    using (var responseStream = await content.ReadAsStreamAsync())
+                    using (var response = await wc.GetAsyncRedirect(uri, _cancel))
                     {
                         cancel?.ThrowIfCancellationRequested();
-                        ContentType = content.Headers.ContentType?.MediaType;
-                        StringBuilder html = new StringBuilder((int)(Math.Min(content.Headers.ContentLength ?? 4 * 1024, (long)maxRead)));
-                        var buffer = new byte[4 * 1024];
-                        int bytesRead = 0;
-                        int totalRead = 0;
-                        while ((bytesRead = await responseStream.ReadAsync(buffer, 0, buffer.Length, _cancel)) > 0)
+                        if (!response.IsSuccessStatusCode)
                         {
-                            cancel?.ThrowIfCancellationRequested();
-                            html.Append(Encoding.UTF8.GetString(buffer, 0, bytesRead));
-                            totalRead += bytesRead;
+                            throw new UrlLoadFailureException((int)response.StatusCode);
+                        }
 
-                            if (totalRead > maxRead)
+                        if (response.Headers.TryGetValues("Content-Type", out var contentTypes))
+                        {
+                            if (contentTypes.FirstOrDefault() != "text/html")
                             {
-                                //stop here so we're not tricked into reading gigabytes and gigabytes of data
-                                break;
-                                //we are limiting the bytes requested in GetAsyncRedirect()
+                                //not an html document
+                                return false;
                             }
                         }
-                        UnparsedHtml = html.ToString();
+
+                        using (var content = response.Content)
+                        using (var responseStream = await content.ReadAsStreamAsync())
+                        {
+                            cancel?.ThrowIfCancellationRequested();
+                            ContentType = content.Headers.ContentType?.MediaType;
+                            StringBuilder html = new StringBuilder((int)(Math.Min(content.Headers.ContentLength ?? 4 * 1024, (long)maxRead)));
+                            var buffer = new byte[4 * 1024];
+                            int bytesRead = 0;
+                            int totalRead = 0;
+                            while ((bytesRead = await responseStream.ReadAsync(buffer, 0, buffer.Length, _cancel)) > 0)
+                            {
+                                cancel?.ThrowIfCancellationRequested();
+                                html.Append(Encoding.UTF8.GetString(buffer, 0, bytesRead));
+                                totalRead += bytesRead;
+
+                                if (totalRead > maxRead)
+                                {
+                                    //stop here so we're not tricked into reading gigabytes and gigabytes of data
+                                    break;
+                                    //we are limiting the bytes requested in GetAsyncRedirect()
+                                }
+                            }
+                            UnparsedHtml = html.ToString();
+                        }
                     }
+
+                    _document = new HtmlAgilityPack.HtmlDocument();
+                    _document.LoadHtml(UnparsedHtml);
+
+                    //ExtractAllTags();
+                    HtmlTitle = ExtractTitle();
+
+                    return true;
                 }
-
-                _document = new HtmlAgilityPack.HtmlDocument();
-                _document.LoadHtml(UnparsedHtml);
-
-                //ExtractAllTags();
-                HtmlTitle = ExtractTitle();
-
-                return true;
             }
             catch (Exception ex)
             {
