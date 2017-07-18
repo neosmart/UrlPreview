@@ -57,7 +57,7 @@ namespace NeoSmart.UrlPreview
                         cancel?.ThrowIfCancellationRequested();
                         if (!response.IsSuccessStatusCode)
                         {
-                            throw new UrlLoadFailureException((int)response.StatusCode);
+                            throw new UrlLoadFailureException((int)response.StatusCode, response.ReasonPhrase ?? "");
                         }
 
                         if (response.Headers.TryGetValues("Content-Type", out var contentTypes))
