@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.15
+VisualStudioVersion = 15.0.26711.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UrlPreview", "UrlPreview\UrlPreview.csproj", "{A408D948-1441-4D6B-BE76-8AB4A06C9FB5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UrlPreviewClient", "UrlPreviewClient\UrlPreviewClient.csproj", "{7FC58D80-63C8-472F-81C8-A1B3A946E709}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UrlPreviewClient", "UrlPreviewClient\UrlPreviewClient.csproj", "{7FC58D80-63C8-472F-81C8-A1B3A946E709}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,5 +24,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {12E9129A-BB4C-4502-B239-320C21EDB15C}
 	EndGlobalSection
 EndGlobal

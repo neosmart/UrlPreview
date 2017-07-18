@@ -7,6 +7,7 @@
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+    <PackageReference Include="xxhash.core" Version="0.2.0" />
   </ItemGroup>
 
   <ItemGroup>
