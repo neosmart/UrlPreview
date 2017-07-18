@@ -30,31 +30,20 @@ namespace NeoSmart.UrlPreview
 
         public async Task<PreviewResult> GetPreviewAsync(CancellationToken? cancel = null)
         {
-            try
-            {
-                var html = new Html();
-                await html.LoadAsync(Uri, cancel);
-                cancel?.ThrowIfCancellationRequested();
+            var html = new Html();
+            await html.LoadAsync(Uri, cancel);
+            cancel?.ThrowIfCancellationRequested();
 
-                ContentType = html.ContentType;
+            ContentType = html.ContentType;
 
-                UrlLoader urlLoader = new Loaders.GenericUrlLoader(html);
+            UrlLoader urlLoader = new Loaders.GenericUrlLoader(html);
 
-                return new PreviewResult
-                {
-                    Url = Uri,
-                    Title = await urlLoader.ExtractPageTitleAsync(),
-                    ImageUrl = await urlLoader.ExtractThumbnailAsync()
-                };
-            }
-            catch (OperationCanceledException)
+            return new PreviewResult
             {
-                throw;
-            }
-            catch
-            {
-                return default(PreviewResult);
-            }
+                Url = Uri,
+                Title = await urlLoader.ExtractPageTitleAsync(),
+                ImageUrl = await urlLoader.ExtractThumbnailAsync()
+            };
         }
     }
 }
