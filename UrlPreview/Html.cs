@@ -42,12 +42,11 @@ namespace NeoSmart.UrlPreview
                 using (var handler = new HttpClientHandler() { AllowAutoRedirect = false, AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip })
                 using (var wc = new HttpClient(handler))
                 {
-                    wc.DefaultRequestHeaders.Clear();
+                    wc.DefaultRequestHeaders.Add("Accept", "*/*");
                     wc.DefaultRequestHeaders.Add("Accept-Encoding", "gzip, deflate");
                     wc.DefaultRequestHeaders.Add("Accept-Language", "en-US,en;q=0.8,fr;q=0.6,de;q=0.4");
                     wc.DefaultRequestHeaders.Add("Cache-Control", "max-age=0");
                     wc.DefaultRequestHeaders.Add("DNT", "1");
-                    wc.DefaultRequestHeaders.Add("Host", uri.Host);
                     wc.DefaultRequestHeaders.Add("Referer", $"{uri.Scheme}://{uri.Host}/");
                     wc.DefaultRequestHeaders.Add("User-Agent", @"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36");
                     wc.DefaultRequestHeaders.Add("Upgrade-Insecure-Requests", "1");
