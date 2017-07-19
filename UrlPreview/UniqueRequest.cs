@@ -8,12 +8,12 @@ namespace NeoSmart.UrlPreview
 {
     /// <summary>
     /// An HTTP request is uniquely identified by more than just the URL, it's the entire request.
-    /// Just because a server keeps 301ing you to the same request over and over again, it does not 
-    /// actually mean there is an infinite loop - it could be ammending the request you make until
-    /// some pre-condition is met at which time the request will go through, as stupid as this 
+    /// Just because a server keeps 301ing you to the same request over and over again, it does not
+    /// actually mean there is an infinite loop - it could be amending the request you make until
+    /// some pre-condition is met at which time the request will go through, as stupid as this
     /// approach may be. *cough* eBay *cough*
     /// </summary>
-    struct UniqueRequest
+    struct UniqueRequest : IEqualityComparer<UniqueRequest>, IEquatable<UniqueRequest>
     {
         /// <summary>
         /// This is a URI because URI encoding can differ but the URL can ultimately be the same
@@ -27,7 +27,7 @@ namespace NeoSmart.UrlPreview
             var xxState = XXHash.CreateState32();
             XXHash.UpdateState32(xxState, ToBytes(RequestUri.ToString()));
             XXHash.UpdateState32(xxState, ToBytes(Method.Method));
-            
+
             foreach (var kv in Headers)
             {
                 //case-insensitive keys
@@ -55,6 +55,31 @@ namespace NeoSmart.UrlPreview
                 Method = request.Method,
                 Headers = new SortedSet<KeyValuePair<string, IEnumerable<string>>>(request.Headers, new HeaderCollectionComparer()),
             };
+        }
+
+        public bool Equals(UniqueRequest x, UniqueRequest y)
+        {
+            return x.GetHashCode() == y.GetHashCode();
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is UniqueRequest)
+            {
+                return ((UniqueRequest)obj).GetHashCode() == GetHashCode();
+            }
+
+            return obj.Equals(this);
+        }
+
+        public int GetHashCode(UniqueRequest obj)
+        {
+            return obj.GetHashCode();
+        }
+
+        public bool Equals(UniqueRequest other)
+        {
+            return other.GetHashCode() == GetHashCode();
         }
 
         class HeaderCollectionComparer : IComparer<KeyValuePair<string, IEnumerable<string>>>
