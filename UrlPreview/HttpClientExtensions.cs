@@ -37,11 +37,11 @@ namespace NeoSmart.UrlPreview
             //you'd be surprised at the number of top 50 sites that redirect repeatedly but take different actions
             //based on the cookie and other request headers.
             //Now we deduplicate based off of state; i.e. the entire request header that is made
-            var visited = new HashSet<UniqueRequest>();
+            var visited = new HashSet<int>();
 
             var response = await client.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead, cancel ?? CancellationToken.None);
             Debug.WriteLine("Initial request: {0}", uri);
-            visited.Add(UniqueRequest.From(response.RequestMessage));
+            visited.Add(UniqueRequest.From(response.RequestMessage).GetHashCode());
             while (((int)response.StatusCode) >= 300 && (int)response.StatusCode < 400)
             {
                 response.Dispose();
@@ -54,7 +54,7 @@ namespace NeoSmart.UrlPreview
                     }
                 }
                 Debug.WriteLine("Redirecting to {0}", redirect);
-                if (!visited.Add(UniqueRequest.From(response.RequestMessage)))
+                if (!visited.Add(UniqueRequest.From(response.RequestMessage).GetHashCode()))
                 {
                     throw new InvalidRedirectException($"Infinite redirection encountered loading URI {uri}");
                 }
