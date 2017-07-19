@@ -5,7 +5,7 @@
     <AssemblyName>NeoSmart.UrlPreview</AssemblyName>
     <RootNamespace>NeoSmart.UrlPreview</RootNamespace>
     <PackageId>UrlPreview</PackageId>
-    <Version>0.2.2</Version>
+    <Version>0.2.3</Version>
     <Authors>NeoSmart Technologies, Mahmoud Al-Qudsi</Authors>
     <Company>NeoSmart Technologies</Company>
     <Product>UrlPreview</Product>
@@ -17,10 +17,10 @@
     <RepositoryUrl>https://github.com/neosmart/UrlPreview/</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>url, preview, html, links</PackageTags>
-    <PackageReleaseNotes>More accurate detection of cyclic/infinite redirects.</PackageReleaseNotes>
+    <PackageReleaseNotes>Fixed broken redirects to a different domain.</PackageReleaseNotes>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <AssemblyVersion>0.2.2.0</AssemblyVersion>
-    <FileVersion>0.2.2.0</FileVersion>
+    <AssemblyVersion>0.2.3.0</AssemblyVersion>
+    <FileVersion>0.2.3.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
