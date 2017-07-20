@@ -33,37 +33,42 @@ namespace NeoSmart.UrlPreview
 
         public static async Task<HttpResponseMessage> GetAsyncRedirect(this HttpClient client, Uri uri, CancellationToken? cancel = null)
         {
+            Debug.WriteLine("Initial request: {0}", uri);
+
             //we used to use only the URI as our cylic request detector but that hasn't worked out too well
             //you'd be surprised at the number of top 50 sites that redirect repeatedly but take different actions
             //based on the cookie and other request headers.
             //Now we deduplicate based off of state; i.e. the entire request header that is made
             var visited = new HashSet<int>();
 
-            var response = await client.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead, cancel ?? CancellationToken.None);
-            Debug.WriteLine("Initial request: {0}", uri);
-            visited.Add(UniqueRequest.From(response.RequestMessage).GetHashCode());
-            while (((int)response.StatusCode) >= 300 && (int)response.StatusCode < 400)
+            HttpResponseMessage response;
+            var requestUrl = uri;
+            do
             {
-                response.Dispose();
-                var redirect = response.Headers.Location;
-                if (!redirect.IsAbsoluteUri)
+                response = await client.GetAsync(requestUrl, HttpCompletionOption.ResponseHeadersRead, cancel ?? CancellationToken.None);
+                if (((int)response.StatusCode) >= 300 && (int)response.StatusCode < 400)
                 {
-                    if (!Uri.TryCreate(uri, redirect, out redirect))
+                    var redirect = response.Headers.Location;
+                    if (!redirect.IsAbsoluteUri)
                     {
-                        throw new InvalidRedirectException(uri.ToString(), redirect.ToString());
+                        if (!Uri.TryCreate(uri, redirect, out redirect))
+                        {
+                            throw new InvalidRedirectException(uri.ToString(), redirect.ToString());
+                        }
                     }
+                    Debug.WriteLine("Redirecting to {0}", redirect);
+                    if (!visited.Add(UniqueRequest.From(response.RequestMessage).GetHashCode())
+                        || visited.Count > 100)
+                    {
+                        throw new InvalidRedirectException($"Infinite redirection encountered loading URI {uri}");
+                    }
+                    requestUrl = redirect;
                 }
-                Debug.WriteLine("Redirecting to {0}", redirect);
-                if (!visited.Add(UniqueRequest.From(response.RequestMessage).GetHashCode()))
+                else
                 {
-                    throw new InvalidRedirectException($"Infinite redirection encountered loading URI {uri}");
+                    break;
                 }
-                if (visited.Count > 100)
-                {
-                    throw new InvalidRedirectException($"Too many redirections encountered loading URI {uri}");
-                }
-                response = await client.GetAsync(redirect, HttpCompletionOption.ResponseHeadersRead, cancel ?? CancellationToken.None);
-            }
+            } while (true);
             return response;
         }
     }

@@ -39,7 +39,7 @@ namespace NeoSmart.UrlPreview
             {
                 //UAP apps forbid redirect from HTTPS to HTTP
                 //We must manually redirect to avoid this issue
-                using (var handler = new HttpClientHandler() { AllowAutoRedirect = false, AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip })
+                using (var handler = new HttpClientHandler() { AllowAutoRedirect = false, AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip, UseCookies = true })
                 using (var wc = new HttpClient(handler))
                 {
                     wc.DefaultRequestHeaders.Add("Accept", "*/*");
