@@ -24,22 +24,22 @@ namespace NeoSmart.UrlPreview
 
         public override int GetHashCode()
         {
-            var xxState = XXHash.CreateState32();
-            XXHash.UpdateState32(xxState, ToBytes(RequestUri.ToString()));
-            XXHash.UpdateState32(xxState, ToBytes(Method.Method));
+            var hash = new XXHash32();
+            hash.Update(ToBytes(RequestUri.ToString()));
+            hash.Update(ToBytes(Method.Method));
 
             foreach (var kv in Headers)
             {
                 //case-insensitive keys
-                XXHash.UpdateState32(xxState, ToBytes(kv.Key.ToLowerInvariant()));
+                hash.Update(ToBytes(kv.Key.ToLowerInvariant()));
                 foreach (var headerValue in kv.Value)
                 {
                     //case-sensitive values?
-                    XXHash.UpdateState32(xxState, ToBytes(headerValue));
+                    hash.Update(ToBytes(headerValue));
                 }
             }
 
-            return (int) XXHash.DigestState32(xxState);
+            return (int)hash.Result;
         }
 
         public byte[] ToBytes(string s)
