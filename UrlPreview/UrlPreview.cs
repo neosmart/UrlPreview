@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,9 +15,11 @@ namespace NeoSmart.UrlPreview
         {
         }
 
+        private static string[] LegalSchemes = new string[] { "http", "https" };
+
         public UrlPreview(Uri uri)
         {
-            if (uri.Scheme.ToLower() != "http" && uri.Scheme.ToLower() != "https")
+            if (!LegalSchemes.Contains(uri.Scheme.ToLowerInvariant()))
             {
                 throw new UnsupportedUrlSchemeException();
             }

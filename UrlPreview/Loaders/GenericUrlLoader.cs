@@ -31,6 +31,8 @@ namespace NeoSmart.UrlPreview.Loaders
             return _html.HtmlTitle;
         }
 
+        private static string[] LegalSchemes = new string[] { "http", "https" };
+
         public override async Task<string> ExtractThumbnailAsync()
         {
             //maybe this isn't an HTML document and it's actually an image
@@ -63,7 +65,7 @@ namespace NeoSmart.UrlPreview.Loaders
                     try
                     {
                         var uri = new Uri(url);
-                        return uri.Scheme == "http" || uri.Scheme == "https";
+                        return LegalSchemes.Contains(uri.Scheme.ToLowerInvariant());
                     }
                     catch
                     {
