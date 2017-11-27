@@ -58,7 +58,18 @@ namespace NeoSmart.UrlPreview.Loaders
             //(presuming the first image is a header or something)
             var images = _html.Document.Descendants("img")
                 .Select(n => n.GetAttributeValue("src", null))
-                .Where(url => !string.IsNullOrWhiteSpace(url))
+                .Where(url =>
+                {
+                    try
+                    {
+                        var uri = new Uri(url);
+                        return uri.Scheme == "http" || uri.Scheme == "https";
+                    }
+                    catch
+                    {
+                        return false;
+                    }
+                })
                 .Select(url => _html.MakeProperUrl(url).ToString())
                 .ToArray();
 
