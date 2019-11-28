@@ -31,11 +31,11 @@ namespace NeoSmart.UrlPreview
             : this(new Uri(uri))
         { }
 
-        public async Task<PreviewResult> GetPreviewAsync(CancellationToken? cancel = null)
+        public async Task<PreviewResult> GetPreviewAsync(CancellationToken cancel = default)
         {
             var html = new Html();
             await html.LoadAsync(Uri, cancel);
-            cancel?.ThrowIfCancellationRequested();
+            cancel.ThrowIfCancellationRequested();
 
             ContentType = html.ContentType;
 

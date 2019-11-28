@@ -18,20 +18,21 @@ namespace NeoSmart.UrlPreview.Loaders
             throw new NotImplementedException();
         }
 
-        public override async Task<string> ExtractPageTitleAsync()
+        public override Task<string> ExtractPageTitleAsync()
         {
             // First try to find an og:title tag that matches
             var matches = _html.Document.Descendants("meta")
                 .Where(n => n.GetAttributeValue("property", null) == "og:title")
                 .Where(n => !string.IsNullOrWhiteSpace(n.GetAttributeValue("content", null)))
                 .ToList();
+            
             if (matches.Count > 0)
             {
-                return matches[0].GetAttributeValue("content", null);
+                return Task.FromResult(matches[0].GetAttributeValue("content", null));
             }
 
             // Otherwise revert to the HTML title
-            return _html.HtmlTitle;
+            return Task.FromResult(_html.HtmlTitle);
         }
 
         public override async Task<string> ExtractThumbnailAsync()

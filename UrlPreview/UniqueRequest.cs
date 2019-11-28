@@ -30,11 +30,11 @@ namespace NeoSmart.UrlPreview
 
             foreach (var kv in Headers)
             {
-                //case-insensitive keys
+                // Case-insensitive keys
                 hash.Update(ToBytes(kv.Key.ToLowerInvariant()));
                 foreach (var headerValue in kv.Value)
                 {
-                    //case-sensitive values?
+                    // Case-sensitive values?
                     hash.Update(ToBytes(headerValue));
                 }
             }
@@ -64,9 +64,9 @@ namespace NeoSmart.UrlPreview
 
         public override bool Equals(object obj)
         {
-            if (obj is UniqueRequest)
+            if (obj is UniqueRequest request)
             {
-                return ((UniqueRequest)obj).GetHashCode() == GetHashCode();
+                return request.GetHashCode() == GetHashCode();
             }
 
             return obj.Equals(this);

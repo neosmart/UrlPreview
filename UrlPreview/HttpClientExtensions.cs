@@ -22,7 +22,8 @@ namespace NeoSmart.UrlPreview
             }
         }
 
-        public static async Task<HttpResponseMessage> GetAsyncRedirect(this HttpClient client, String url, CancellationToken? cancel = null)
+        public static async Task<HttpResponseMessage> GetAsyncRedirect(this HttpClient client, string url,
+            CancellationToken cancel = default)
         {
             if (Uri.TryCreate(url, UriKind.Absolute, out var uri))
             {
@@ -31,7 +32,8 @@ namespace NeoSmart.UrlPreview
             return null;
         }
 
-        public static async Task<HttpResponseMessage> GetAsyncRedirect(this HttpClient client, Uri uri, CancellationToken? cancel = null)
+        public static async Task<HttpResponseMessage> GetAsyncRedirect(this HttpClient client, Uri uri,
+            CancellationToken cancel = default)
         {
             Debug.WriteLine("Initial request: {0}", uri);
 
@@ -45,7 +47,7 @@ namespace NeoSmart.UrlPreview
             var requestUrl = uri;
             do
             {
-                response = await client.GetAsync(requestUrl, HttpCompletionOption.ResponseHeadersRead, cancel ?? CancellationToken.None);
+                response = await client.GetAsync(requestUrl, HttpCompletionOption.ResponseHeadersRead, cancel);
                 if (((int)response.StatusCode) >= 300 && (int)response.StatusCode < 400)
                 {
                     var redirect = response.Headers.Location;

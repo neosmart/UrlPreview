@@ -15,31 +15,31 @@ namespace NeoSmart.UrlPreview
     {
         public Uri Uri { get; private set; }
         public string UnparsedHtml { get; private set; }
+        private static readonly string[] LegalSchemes = { "http", "https" };
         public string HtmlTitle { get; private set; }
-        //public List<KeyValuePair<string, Dictionary<string, string>>> TagList { get; private set; }
-        private bool _loaded = false;
-        private static CancellationToken _noCancel = new CancellationToken(false);
-        private CancellationToken _cancel;
-        private const uint maxRead = 1024 * 1024;
+        private readonly bool _loaded = false;
+
+        private const string UserAgent = @"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36";
+        private const uint MaxRead = 1024 * 1024;
         public string ContentType { get; private set; }
         private HtmlAgilityPack.HtmlDocument _document;
         public HtmlAgilityPack.HtmlNode Document => _document?.DocumentNode;
 
-        public async Task<bool> LoadAsync(Uri uri, CancellationToken? cancel = null)
+        public async Task<bool> LoadAsync(Uri uri, CancellationToken cancel = default)
         {
-            if (_loaded)
-            {
-                throw new Exception("Cannot load more than once!");
-            }
+            Debug.Assert(_loaded == false, "HTML class cannot be reused at this time!");
 
             Uri = uri;
-            _cancel = cancel ?? _noCancel;
 
             try
             {
-                //UAP apps forbid redirect from HTTPS to HTTP
-                //We must manually redirect to avoid this issue
-                using (var handler = new HttpClientHandler() { AllowAutoRedirect = false, AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip, UseCookies = true })
+                // UAP apps forbid redirect from HTTPS to HTTP, we must manually redirect to avoid this issue
+                using (var handler = new HttpClientHandler()
+                {
+                    AllowAutoRedirect = false,
+                    AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip, 
+                    UseCookies = true
+                })
                 using (var wc = new HttpClient(handler))
                 {
                     wc.DefaultRequestHeaders.Add("Accept", "*/*");
@@ -48,12 +48,12 @@ namespace NeoSmart.UrlPreview
                     wc.DefaultRequestHeaders.Add("Cache-Control", "max-age=0");
                     wc.DefaultRequestHeaders.Add("DNT", "1");
                     wc.DefaultRequestHeaders.Add("Referer", $"{uri.Scheme}://{uri.Host}/");
-                    wc.DefaultRequestHeaders.Add("User-Agent", @"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36");
+                    wc.DefaultRequestHeaders.Add("User-Agent", UserAgent);
                     wc.DefaultRequestHeaders.Add("Upgrade-Insecure-Requests", "1");
 
-                    using (var response = await wc.GetAsyncRedirect(uri, _cancel))
+                    using (var response = await wc.GetAsyncRedirect(uri, cancel))
                     {
-                        cancel?.ThrowIfCancellationRequested();
+                        cancel.ThrowIfCancellationRequested();
                         if (!response.IsSuccessStatusCode)
                         {
                             throw new UrlLoadFailureException((int)response.StatusCode, response.ReasonPhrase ?? "");
@@ -63,7 +63,7 @@ namespace NeoSmart.UrlPreview
                         {
                             if (contentTypes.FirstOrDefault() != "text/html")
                             {
-                                //not an html document
+                                // This is not an html document, so it can't be parsed as one
                                 return false;
                             }
                         }
@@ -71,23 +71,23 @@ namespace NeoSmart.UrlPreview
                         using (var content = response.Content)
                         using (var responseStream = await content.ReadAsStreamAsync())
                         {
-                            cancel?.ThrowIfCancellationRequested();
+                            cancel.ThrowIfCancellationRequested();
                             ContentType = content.Headers.ContentType?.MediaType;
-                            StringBuilder html = new StringBuilder((int)(Math.Min(content.Headers.ContentLength ?? 4 * 1024, (long)maxRead)));
+                            var html = new StringBuilder((int)(Math.Min(content.Headers.ContentLength ?? 4 * 1024, (long)MaxRead)));
                             var buffer = new byte[4 * 1024];
                             int bytesRead = 0;
                             int totalRead = 0;
-                            while ((bytesRead = await responseStream.ReadAsync(buffer, 0, buffer.Length, _cancel)) > 0)
+                            while ((bytesRead = await responseStream.ReadAsync(buffer, 0, buffer.Length, cancel)) > 0)
                             {
-                                cancel?.ThrowIfCancellationRequested();
+                                cancel.ThrowIfCancellationRequested();
                                 html.Append(Encoding.UTF8.GetString(buffer, 0, bytesRead));
                                 totalRead += bytesRead;
 
-                                if (totalRead > maxRead)
+                                if (totalRead > MaxRead)
                                 {
-                                    //stop here so we're not tricked into reading gigabytes and gigabytes of data
+                                    // We are limiting the bytes requested in GetAsyncRedirect()
+                                    // Stop here so we're not tricked into reading gigabytes and gigabytes of data
                                     break;
-                                    //we are limiting the bytes requested in GetAsyncRedirect()
                                 }
                             }
                             UnparsedHtml = html.ToString();
@@ -97,7 +97,7 @@ namespace NeoSmart.UrlPreview
                     _document = new HtmlAgilityPack.HtmlDocument();
                     _document.LoadHtml(UnparsedHtml);
 
-                    //ExtractAllTags();
+                    // ExtractAllTags();
                     HtmlTitle = ExtractTitle();
 
                     return true;
@@ -110,19 +110,18 @@ namespace NeoSmart.UrlPreview
             }
         }
 
-        static private Regex _titleTagRegex = new Regex(@"\<[^><]*\btitle\b[^><]*\>([^><]*)<[^><]*/\s*title\b\s*\>", RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.Compiled);
+        private static Regex _titleTagRegex = new Regex(
+            @"\<[^><]*\btitle\b[^><]*\>([^><]*)<[^><]*/\s*title\b\s*\>", 
+            RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.Compiled);
         //<\s*([a-z]+\b)\s*(?>([a-z-]+)\s*(=\s*(?:(['"])(.*?)\4)|[a-z0-9-]+)?\s*)*\s*\/?\s*>
-        static private Regex _genericTagRegex = new Regex(@"<\s*([a-z]+\b)\s*(?>(([a-z-]+)\s*=\s*(?:(['" + "\"" + @"])(.*?)\4)|[a-z0-9-]+)?\s*)*\s*\/?\s*>", RegexOptions.IgnoreCase | RegexOptions.Multiline | RegexOptions.Compiled);
+        private static readonly Regex _genericTagRegex = new Regex(
+            @"<\s*([a-z]+\b)\s*(?>(([a-z-]+)\s*=\s*(?:(['""])(.*?)\4)|[a-z0-9-]+)?\s*)*\s*\/?\s*>", 
+            RegexOptions.IgnoreCase | RegexOptions.Multiline | RegexOptions.Compiled);
 
         private string ExtractTitle()
         {
-            var matches = _document.DocumentNode.Descendants("title");
-            if (matches.Any())
-            {
-                return matches.First().InnerText;
-            }
-
-            return null;
+            return _document.DocumentNode.Descendants("title")
+                       .FirstOrDefault()?.InnerText ?? string.Empty;
         }
 
         /// <summary>
@@ -178,17 +177,18 @@ namespace NeoSmart.UrlPreview
             return null;
         }
 
-        public async Task<bool> IsValidUrlAsync(string url)
+        public async Task<bool> IsValidUrlAsync(string url, CancellationToken cancel = default)
         {
-            if (!Uri.TryCreate(url, UriKind.Absolute, out var uri) || !new[] { "http", "https" }.Contains(uri.Scheme.ToLower()))
+            if (!Uri.TryCreate(url, UriKind.Absolute, out var uri) || !LegalSchemes.Contains(uri.Scheme.ToLower()))
             {
                 Debug.WriteLine("Invalid preview URL " + url);
                 return false;
             }
+            
             try
             {
                 using (var request = new HttpClient())
-                using (var response = await request.GetAsyncRedirect(url, _cancel))
+                using (var response = await request.GetAsyncRedirect(url, cancel))
                 {
                     return response.IsSuccessStatusCode;
                 }
