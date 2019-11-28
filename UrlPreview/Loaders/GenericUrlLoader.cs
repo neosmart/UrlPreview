@@ -7,6 +7,8 @@ namespace NeoSmart.UrlPreview.Loaders
 {
     class GenericUrlLoader : UrlLoader
     {
+        private static string[] LegalSchemes = new string[] { "http", "https" };
+        
         public GenericUrlLoader(Html html) : base(html)
         {
         }
@@ -18,30 +20,29 @@ namespace NeoSmart.UrlPreview.Loaders
 
         public override async Task<string> ExtractPageTitleAsync()
         {
-            //first try to find an og:title tag that matches
+            // First try to find an og:title tag that matches
             var matches = _html.Document.Descendants("meta")
                 .Where(n => n.GetAttributeValue("property", null) == "og:title")
-                .Where(n => !string.IsNullOrWhiteSpace(n.GetAttributeValue("content", null)));
-            if (matches.Any())
+                .Where(n => !string.IsNullOrWhiteSpace(n.GetAttributeValue("content", null)))
+                .ToList();
+            if (matches.Count > 0)
             {
-                return matches.First().GetAttributeValue("content", null);
+                return matches[0].GetAttributeValue("content", null);
             }
 
-            //otherwise
+            // Otherwise revert to the HTML title
             return _html.HtmlTitle;
         }
 
-        private static string[] LegalSchemes = new string[] { "http", "https" };
-
         public override async Task<string> ExtractThumbnailAsync()
         {
-            //maybe this isn't an HTML document and it's actually an image
+            // Maybe this isn't an HTML document and it's actually an image
             if (_html.ContentType != null && _html.ContentType.ToLower().StartsWith("image/"))
             {
                 return (await _html.IsValidUrlAsync(_html.Uri.ToString())) ? _html.Uri.ToString() : null;
             }
 
-            //first try to find an og:image or og:image:secure_url
+            // First try to find an og:image or og:image:secure_url
             var matches = _html.Document.Descendants("meta")
                 .Where(n => new[] { "og:image:secure_url", "og:image" }.Contains(n.GetAttributeValue("property", null)))
                 .Select(n => n.GetAttributeValue("content", null))
@@ -56,8 +57,8 @@ namespace NeoSmart.UrlPreview.Loaders
                 }
             }
 
-            //else try to find the <del>first</del> second image in the document with a valid URL
-            //(presuming the first image is a header or something)
+            // Else try to find the <del>first</del> second image in the document with a valid URL
+            // (presuming the first image is a header or something)
             var images = _html.Document.Descendants("img")
                 .Select(n => n.GetAttributeValue("src", null))
                 .Where(url =>

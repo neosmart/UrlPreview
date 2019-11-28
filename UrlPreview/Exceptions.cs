@@ -9,21 +9,14 @@ namespace NeoSmart.UrlPreview
         { }
     }
 
-    public class UnsupportedUrlSchemeException : Exception
+    public class UnsupportedUrlSchemeException : UrlPreviewException
     {
         public UnsupportedUrlSchemeException(string message = "", Exception innerException = null)
             : base(message, innerException)
         { }
     }
 
-    public class UnsupportedUrlException : Exception
-    {
-        public UnsupportedUrlException(string message = "This URL does not support previewing", Exception innerException = null)
-            : base(message, innerException)
-        { }
-    }
-
-    public class UrlLoadFailureException : Exception
+    public class UrlLoadFailureException : UrlPreviewException
     {
         public int HttpStatus { get; protected set; }
         public UrlLoadFailureException(int httpStatus, string message = "", Exception innerException = null)

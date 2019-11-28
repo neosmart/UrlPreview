@@ -15,7 +15,7 @@ namespace NeoSmart.UrlPreview
         {
         }
 
-        private static string[] LegalSchemes = new string[] { "http", "https" };
+        private static readonly string[] LegalSchemes = { "http", "https" };
 
         public UrlPreview(Uri uri)
         {
