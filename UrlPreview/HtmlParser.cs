@@ -1,14 +1,17 @@
-﻿using System.Threading.Tasks;
+using System;
+using System.Threading.Tasks;
 
 namespace NeoSmart.UrlPreview
 {
     abstract class UrlLoader
     {
-        protected Html _html;
+        protected Uri Url { get; private set; }
+        protected Html Html { get; private set; }
 
-        public UrlLoader(Html html)
+        public UrlLoader(Uri url, Html html)
         {
-            _html = html;
+            Url = url;
+            Html = html;
         }
 
         public abstract Task<string> ExtractPageTitleAsync();

@@ -1,9 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net.Http;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Linq;
 using System.Threading.Tasks;
@@ -97,7 +95,6 @@ namespace NeoSmart.UrlPreview
                     _document = new HtmlAgilityPack.HtmlDocument();
                     _document.LoadHtml(UnparsedHtml);
 
-                    // ExtractAllTags();
                     HtmlTitle = ExtractTitle();
 
                     return true;
@@ -110,54 +107,10 @@ namespace NeoSmart.UrlPreview
             }
         }
 
-        private static Regex _titleTagRegex = new Regex(
-            @"\<[^><]*\btitle\b[^><]*\>([^><]*)<[^><]*/\s*title\b\s*\>",
-            RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.Compiled);
-        //<\s*([a-z]+\b)\s*(?>([a-z-]+)\s*(=\s*(?:(['"])(.*?)\4)|[a-z0-9-]+)?\s*)*\s*\/?\s*>
-        private static readonly Regex _genericTagRegex = new Regex(
-            @"<\s*([a-z]+\b)\s*(?>(([a-z-]+)\s*=\s*(?:(['""])(.*?)\4)|[a-z0-9-]+)?\s*)*\s*\/?\s*>",
-            RegexOptions.IgnoreCase | RegexOptions.Multiline | RegexOptions.Compiled);
-
         private string ExtractTitle()
         {
             return _document.DocumentNode.Descendants("title")
                        .FirstOrDefault()?.InnerText ?? string.Empty;
-        }
-
-        /// <summary>
-        /// Extract a *flat* list of all tags in the document (no nesting) along with a dictionary of their key=value pairs
-        /// This was used when HtmlAgilityPack was not available for .NET Core/UWP
-        /// </summary>
-        /// <returns></returns>
-        private List<KeyValuePair<string, Dictionary<string, string>>> ExtractAllTags()
-        {
-            var tags = new List<KeyValuePair<string, Dictionary<string, string>>>();
-
-            var matches = _genericTagRegex.Matches(UnparsedHtml);
-            foreach (Match m in matches)
-            {
-                var attrs = new Dictionary<string, string>();
-                var tag = new KeyValuePair<string, Dictionary<string, string>>(m.Groups[1].Value, attrs);
-
-                //foreach (Capture attr in m.Groups[2].Captures)
-                for (int i = 0, j = 0; i < m.Groups[2].Captures.Count; ++i)
-                {
-                    var attr = m.Groups[2].Captures[i];
-                    //tag.Key = attr.Value;
-                    if (attr.Value.Contains("="))
-                    {
-                        var key = m.Groups[2].Captures[i].Value.ToLower().Substring(0, m.Groups[2].Captures[i].Value.IndexOf('=', 0));
-                        tag.Value[key] = m.Groups[5].Captures[j++].Value;
-                    }
-                    else
-                    {
-                        tag.Value[m.Groups[2].Captures[i].Value.ToLower()] = null;
-                    }
-                }
-                tags.Add(tag);
-            }
-
-            return tags;
         }
 
         public Uri MakeProperUrl(string url)
@@ -187,7 +140,7 @@ namespace NeoSmart.UrlPreview
 
             try
             {
-                using (var request = new HttpClient())
+                var request = new HttpClient();
                 using (var response = await request.GetAsyncRedirect(url, cancel))
                 {
                     return response.IsSuccessStatusCode;

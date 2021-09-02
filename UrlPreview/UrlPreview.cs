@@ -1,4 +1,5 @@
-﻿using System;
+using NeoSmart.UrlPreview.Loaders;
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -39,7 +40,30 @@ namespace NeoSmart.UrlPreview
 
             ContentType = html.ContentType;
 
-            UrlLoader urlLoader = new Loaders.GenericUrlLoader(html);
+            UrlLoader urlLoader;
+            if (Uri.Host.Equals("amzn.to", StringComparison.OrdinalIgnoreCase)
+                || Uri.Host.StartsWith("amazon.", StringComparison.OrdinalIgnoreCase)
+                || Uri.Host.StartsWith("smile.amazon.", StringComparison.OrdinalIgnoreCase))
+            {
+                urlLoader = new AmazonLoader(Uri, html);
+                var tag = "?tag=neos00-20";
+                var url = Uri.ToString();
+                if (!url.Contains("tag="))
+                {
+                    if (!url.Contains('?'))
+                    {
+                        Uri = new Uri($"{url}{tag}");
+                    }
+                    else
+                    {
+                        Uri = new Uri(url.Replace("?", tag));
+                    }
+                }
+            }
+            else
+            {
+                urlLoader = new GenericUrlLoader(Uri, html);
+            }
 
             return new PreviewResult
             {

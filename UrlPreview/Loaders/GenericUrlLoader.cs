@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -7,9 +6,9 @@ namespace NeoSmart.UrlPreview.Loaders
 {
     class GenericUrlLoader : UrlLoader
     {
-        private static string[] LegalSchemes = new string[] { "http", "https" };
-        
-        public GenericUrlLoader(Html html) : base(html)
+        protected static readonly string[] LegalSchemes = new[] { "http", "https" };
+
+        public GenericUrlLoader(Uri url, Html html) : base(url, html)
         {
         }
 
@@ -21,43 +20,38 @@ namespace NeoSmart.UrlPreview.Loaders
         public override Task<string> ExtractPageTitleAsync()
         {
             // First try to find an og:title tag that matches
-            var matches = _html.Document.Descendants("meta")
+            var matches = Html.Document.Descendants("meta")
                 .Where(n => n.GetAttributeValue("property", null) == "og:title")
                 .Where(n => !string.IsNullOrWhiteSpace(n.GetAttributeValue("content", null)))
                 .ToList();
-            
+
             if (matches.Count > 0)
             {
                 return Task.FromResult(matches[0].GetAttributeValue("content", null));
             }
 
-<<<<<<< HEAD
             // Otherwise revert to the HTML title
-            return Task.FromResult(_html.HtmlTitle);
-=======
-            // Otherwise
-            return _html.HtmlTitle;
->>>>>>> Fix formatting
+            return Task.FromResult(Html.HtmlTitle);
         }
 
         public override async Task<string> ExtractThumbnailAsync()
         {
             // Maybe this isn't an HTML document and it's actually an image
-            if (_html.ContentType != null && _html.ContentType.ToLower().StartsWith("image/"))
+            if (Html.ContentType != null && Html.ContentType.ToLower().StartsWith("image/"))
             {
-                return (await _html.IsValidUrlAsync(_html.Uri.ToString())) ? _html.Uri.ToString() : null;
+                return (await Html.IsValidUrlAsync(Html.Uri.ToString())) ? Html.Uri.ToString() : null;
             }
 
             // First try to find an og:image or og:image:secure_url
-            var matches = _html.Document.Descendants("meta")
+            var matches = Html.Document.Descendants("meta")
                 .Where(n => new[] { "og:image:secure_url", "og:image" }.Contains(n.GetAttributeValue("property", null)))
                 .Select(n => n.GetAttributeValue("content", null))
                 .Where(url => !string.IsNullOrWhiteSpace(url))
-                .Select(url => _html.MakeProperUrl(url).ToString());
+                .Select(url => Html.MakeProperUrl(url).ToString());
 
             foreach (var url in matches)
             {
-                if (await _html.IsValidUrlAsync(url))
+                if (await Html.IsValidUrlAsync(url))
                 {
                     return url;
                 }
@@ -65,7 +59,7 @@ namespace NeoSmart.UrlPreview.Loaders
 
             // Else try to find the <del>first</del> second image in the document with a valid URL
             // (presuming the first image is a header or something)
-            var images = _html.Document.Descendants("img")
+            var images = Html.Document.Descendants("img")
                 .Select(n => n.GetAttributeValue("src", null))
                 .Where(url =>
                 {
@@ -79,17 +73,17 @@ namespace NeoSmart.UrlPreview.Loaders
                         return false;
                     }
                 })
-                .Select(url => _html.MakeProperUrl(url).ToString())
+                .Select(url => Html.MakeProperUrl(url).ToString())
                 .ToArray();
 
             if (images.Length == 1)
             {
-                return (await _html.IsValidUrlAsync(images[0])) ? images[0] : null;
+                return (await Html.IsValidUrlAsync(images[0])) ? images[0] : null;
             }
 
             foreach (var image in images.Skip(1))
             {
-                if (await _html.IsValidUrlAsync(image))
+                if (await Html.IsValidUrlAsync(image))
                 {
                     return image;
                 }
