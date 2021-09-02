@@ -5,7 +5,7 @@
 		<AssemblyName>NeoSmart.UrlPreview</AssemblyName>
 		<RootNamespace>NeoSmart.UrlPreview</RootNamespace>
 		<PackageId>UrlPreview</PackageId>
-		<Version>1.1.0</Version>
+		<Version>1.1.1</Version>
 		<Authors>Mahmoud Al-Qudsi</Authors>
 		<Company>NeoSmart Technologies</Company>
 		<Product>UrlPreview</Product>
@@ -19,8 +19,8 @@
 		<PackageTags>url, preview, html, links</PackageTags>
 		<PackageReleaseNotes></PackageReleaseNotes>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-		<AssemblyVersion>1.1.0.0</AssemblyVersion>
-		<FileVersion>1.1.0.0</FileVersion>
+		<AssemblyVersion>1.1.1.0</AssemblyVersion>
+		<FileVersion>1.1.1.0</FileVersion>
 		<LangVersion>9</LangVersion>
 	</PropertyGroup>
 
