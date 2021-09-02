@@ -11,11 +11,11 @@ namespace NeoSmart.UrlPreview
 {
     public class Html
     {
+        private static readonly string[] LegalSchemes = { "http", "https" };
+
         public Uri Uri { get; private set; }
         public string UnparsedHtml { get; private set; }
-        private static readonly string[] LegalSchemes = { "http", "https" };
         public string HtmlTitle { get; private set; }
-        private readonly bool _loaded = false;
 
         private const string UserAgent = @"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36";
         private const uint MaxRead = 1024 * 1024;
@@ -25,8 +25,6 @@ namespace NeoSmart.UrlPreview
 
         public async Task<bool> LoadAsync(Uri uri, CancellationToken cancel = default)
         {
-            Debug.Assert(_loaded == false, "HTML class cannot be reused at this time!");
-
             Uri = uri;
 
             try
@@ -71,7 +69,7 @@ namespace NeoSmart.UrlPreview
                         {
                             cancel.ThrowIfCancellationRequested();
                             ContentType = content.Headers.ContentType?.MediaType;
-                            var html = new StringBuilder((int)(Math.Min(content.Headers.ContentLength ?? 4 * 1024, (long)MaxRead)));
+                            var html = new StringBuilder((int)Math.Min(content.Headers.ContentLength ?? 4 * 1024, MaxRead));
                             var buffer = new byte[4 * 1024];
                             int bytesRead = 0;
                             int totalRead = 0;
@@ -109,8 +107,8 @@ namespace NeoSmart.UrlPreview
 
         private string ExtractTitle()
         {
-            return _document.DocumentNode.Descendants("title")
-                       .FirstOrDefault()?.InnerText ?? string.Empty;
+            var title = _document.DocumentNode.SelectSingleNode("//title");
+            return title?.InnerText ?? string.Empty;
         }
 
         public Uri MakeProperUrl(string url)

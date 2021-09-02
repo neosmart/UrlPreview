@@ -1,33 +1,38 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-	<TargetFrameworks>net45;netstandard1.3;netstandard2.0;netstandard2.1;netcoreapp3.1</TargetFrameworks>
-    <AssemblyName>NeoSmart.UrlPreview</AssemblyName>
-    <RootNamespace>NeoSmart.UrlPreview</RootNamespace>
-    <PackageId>UrlPreview</PackageId>
-    <Version>0.2.5</Version>
-    <Authors>NeoSmart Technologies, Mahmoud Al-Qudsi</Authors>
-    <Company>NeoSmart Technologies</Company>
-    <Product>UrlPreview</Product>
-    <Description>A library to generate URL previews for friendly URLs, getting the title, thumbnail, and a short description.</Description>
-    <Copyright>Copyright NeoSmart Technologies 2017</Copyright>
-    <PackageLicenseUrl>https://cdn.rawgit.com/neosmart/UrlPreview/master/LICENSE</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/neosmart/UrlPreview/</PackageProjectUrl>
-    <PackageIconUrl>https://cdn.rawgit.com/neosmart/UrlPreview/master/UrlPreview.png</PackageIconUrl>
-    <RepositoryUrl>https://github.com/neosmart/UrlPreview/</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
-    <PackageTags>url, preview, html, links</PackageTags>
-    <PackageReleaseNotes>Fixed broken redirects to a different domain.</PackageReleaseNotes>
-    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <AssemblyVersion>0.2.5.0</AssemblyVersion>
-    <FileVersion>0.2.5.0</FileVersion>
-    <LangVersion>8</LangVersion>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFrameworks>net45;netstandard1.3</TargetFrameworks>
+		<AssemblyName>NeoSmart.UrlPreview</AssemblyName>
+		<RootNamespace>NeoSmart.UrlPreview</RootNamespace>
+		<PackageId>UrlPreview</PackageId>
+		<Version>1.1.0</Version>
+		<Authors>Mahmoud Al-Qudsi</Authors>
+		<Company>NeoSmart Technologies</Company>
+		<Product>UrlPreview</Product>
+		<Description>A library to generate URL previews, getting the title, thumbnail, and a short description. Get Amazon URL product previews.</Description>
+		<Copyright>Copyright NeoSmart Technologies 2017-2021</Copyright>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageProjectUrl>https://github.com/neosmart/UrlPreview/</PackageProjectUrl>
+		<PackageIconUrl>https://cdn.rawgit.com/neosmart/UrlPreview/master/UrlPreview.png</PackageIconUrl>
+		<RepositoryUrl>https://github.com/neosmart/UrlPreview/</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageTags>url, preview, html, links</PackageTags>
+		<PackageReleaseNotes></PackageReleaseNotes>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<AssemblyVersion>1.1.0.0</AssemblyVersion>
+		<FileVersion>1.1.0.0</FileVersion>
+		<LangVersion>9</LangVersion>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="HtmlAgilityPack" Version="1.11.17" />
-    <PackageReference Include="System.Net.Http" Version="4.3.4" />
-    <PackageReference Include="xxHash.Core" Version="0.3.0" />
-  </ItemGroup>
+	<PropertyGroup>
+		<IncludeSymbols>true</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="HtmlAgilityPack" Version="1.11.36" />
+		<PackageReference Include="System.Net.Http" Version="4.3.4" />
+		<PackageReference Include="xxHash.Core" Version="0.3.0" />
+	</ItemGroup>
 
 </Project>

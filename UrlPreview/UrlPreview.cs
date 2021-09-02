@@ -8,6 +8,8 @@ namespace NeoSmart.UrlPreview
 {
     public class UrlPreview
     {
+        private static readonly string[] LegalSchemes = { "http", "https" };
+
         public Uri Uri { get; private set; }
         public string Url => Uri.ToString();
         public string ContentType { get; private set; }
@@ -15,8 +17,6 @@ namespace NeoSmart.UrlPreview
         public UrlPreview()
         {
         }
-
-        private static readonly string[] LegalSchemes = { "http", "https" };
 
         public UrlPreview(Uri uri)
         {
@@ -43,20 +43,21 @@ namespace NeoSmart.UrlPreview
             UrlLoader urlLoader;
             if (Uri.Host.Equals("amzn.to", StringComparison.OrdinalIgnoreCase)
                 || Uri.Host.StartsWith("amazon.", StringComparison.OrdinalIgnoreCase)
+                || Uri.Host.StartsWith("www.amazon.", StringComparison.OrdinalIgnoreCase)
                 || Uri.Host.StartsWith("smile.amazon.", StringComparison.OrdinalIgnoreCase))
             {
                 urlLoader = new AmazonLoader(Uri, html);
-                var tag = "?tag=neos00-20";
+                var tag = "tag=neos00-20";
                 var url = Uri.ToString();
                 if (!url.Contains("tag="))
                 {
                     if (!url.Contains('?'))
                     {
-                        Uri = new Uri($"{url}{tag}");
+                        Uri = new Uri($"{url}?{tag}");
                     }
                     else
                     {
-                        Uri = new Uri(url.Replace("?", tag));
+                        Uri = new Uri(url.Replace("?", $"?{tag}&"));
                     }
                 }
             }
