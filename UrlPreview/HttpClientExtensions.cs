@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net.Http;
@@ -35,10 +35,10 @@ namespace NeoSmart.UrlPreview
         {
             Debug.WriteLine("Initial request: {0}", uri);
 
-            //we used to use only the URI as our cylic request detector but that hasn't worked out too well
-            //you'd be surprised at the number of top 50 sites that redirect repeatedly but take different actions
-            //based on the cookie and other request headers.
-            //Now we deduplicate based off of state; i.e. the entire request header that is made
+            // We used to use only the URI as our cylic request detector but that hasn't worked out too well
+            // you'd be surprised at the number of top 50 sites that redirect repeatedly but take different actions
+            // based on the cookie and other request headers.
+            // Now we deduplicate based off of state; i.e. the entire request header that is made
             var visited = new HashSet<int>();
 
             HttpResponseMessage response;

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,7 +18,7 @@ namespace NeoSmart.UrlPreview.Loaders
 
         public override async Task<string> ExtractPageTitleAsync()
         {
-            //first try to find an og:title tag that matches
+            // First try to find an og:title tag that matches
             var matches = _html.Document.Descendants("meta")
                 .Where(n => n.GetAttributeValue("property", null) == "og:title")
                 .Where(n => !string.IsNullOrWhiteSpace(n.GetAttributeValue("content", null)));
@@ -27,7 +27,7 @@ namespace NeoSmart.UrlPreview.Loaders
                 return matches.First().GetAttributeValue("content", null);
             }
 
-            //otherwise
+            // Otherwise
             return _html.HtmlTitle;
         }
 
@@ -35,13 +35,13 @@ namespace NeoSmart.UrlPreview.Loaders
 
         public override async Task<string> ExtractThumbnailAsync()
         {
-            //maybe this isn't an HTML document and it's actually an image
+            // Maybe this isn't an HTML document and it's actually an image
             if (_html.ContentType != null && _html.ContentType.ToLower().StartsWith("image/"))
             {
                 return (await _html.IsValidUrlAsync(_html.Uri.ToString())) ? _html.Uri.ToString() : null;
             }
 
-            //first try to find an og:image or og:image:secure_url
+            // First try to find an og:image or og:image:secure_url
             var matches = _html.Document.Descendants("meta")
                 .Where(n => new[] { "og:image:secure_url", "og:image" }.Contains(n.GetAttributeValue("property", null)))
                 .Select(n => n.GetAttributeValue("content", null))
@@ -56,8 +56,8 @@ namespace NeoSmart.UrlPreview.Loaders
                 }
             }
 
-            //else try to find the <del>first</del> second image in the document with a valid URL
-            //(presuming the first image is a header or something)
+            // Else try to find the <del>first</del> second image in the document with a valid URL
+            // (presuming the first image is a header or something)
             var images = _html.Document.Descendants("img")
                 .Select(n => n.GetAttributeValue("src", null))
                 .Where(url =>

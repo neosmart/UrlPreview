@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net.Http;
@@ -37,8 +37,7 @@ namespace NeoSmart.UrlPreview
 
             try
             {
-                //UAP apps forbid redirect from HTTPS to HTTP
-                //We must manually redirect to avoid this issue
+                // UAP apps forbid redirect from HTTPS to HTTP. We must manually redirect to avoid this issue.
                 using (var handler = new HttpClientHandler() { AllowAutoRedirect = false, AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip, UseCookies = true })
                 using (var wc = new HttpClient(handler))
                 {
@@ -85,9 +84,9 @@ namespace NeoSmart.UrlPreview
 
                                 if (totalRead > maxRead)
                                 {
-                                    //stop here so we're not tricked into reading gigabytes and gigabytes of data
+                                    // Stop here so we're not tricked into reading gigabytes and gigabytes of data
                                     break;
-                                    //we are limiting the bytes requested in GetAsyncRedirect()
+                                    // We are limiting the bytes requested in GetAsyncRedirect()
                                 }
                             }
                             UnparsedHtml = html.ToString();

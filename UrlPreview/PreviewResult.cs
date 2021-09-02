@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 
 namespace NeoSmart.UrlPreview
 {
-    public struct PreviewResult
+    public class PreviewResult
     {
         public Uri Url { get; set; }
 
