@@ -1,4 +1,4 @@
-﻿using NeoSmart.Hashing.XXHash;
+using NeoSmart.Hashing.XXHash;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -13,7 +13,7 @@ namespace NeoSmart.UrlPreview
     /// some pre-condition is met at which time the request will go through, as stupid as this
     /// approach may be. *cough* eBay *cough*
     /// </summary>
-    struct UniqueRequest : IEqualityComparer<UniqueRequest>, IEquatable<UniqueRequest>
+    class UniqueRequest : IEqualityComparer<UniqueRequest>, IEquatable<UniqueRequest>
     {
         /// <summary>
         /// This is a URI because URI encoding can differ but the URL can ultimately be the same

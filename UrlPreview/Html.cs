@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net.Http;
@@ -37,11 +37,11 @@ namespace NeoSmart.UrlPreview
                 using (var handler = new HttpClientHandler()
                 {
                     AllowAutoRedirect = false,
-                    AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip, 
+                    AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip,
                     UseCookies = true
                 })
-                using (var wc = new HttpClient(handler))
                 {
+                    var wc = new HttpClient(handler);
                     wc.DefaultRequestHeaders.Add("Accept", "*/*");
                     wc.DefaultRequestHeaders.Add("Accept-Encoding", "gzip, deflate");
                     wc.DefaultRequestHeaders.Add("Accept-Language", "en-US,en;q=0.8,fr;q=0.6,de;q=0.4");
@@ -105,17 +105,17 @@ namespace NeoSmart.UrlPreview
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Exception loading {uri.ToString()}: {ex.ToString()}");
+                Debug.WriteLine($"Exception loading {uri}: {ex}");
                 throw;
             }
         }
 
         private static Regex _titleTagRegex = new Regex(
-            @"\<[^><]*\btitle\b[^><]*\>([^><]*)<[^><]*/\s*title\b\s*\>", 
+            @"\<[^><]*\btitle\b[^><]*\>([^><]*)<[^><]*/\s*title\b\s*\>",
             RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.Compiled);
         //<\s*([a-z]+\b)\s*(?>([a-z-]+)\s*(=\s*(?:(['"])(.*?)\4)|[a-z0-9-]+)?\s*)*\s*\/?\s*>
         private static readonly Regex _genericTagRegex = new Regex(
-            @"<\s*([a-z]+\b)\s*(?>(([a-z-]+)\s*=\s*(?:(['""])(.*?)\4)|[a-z0-9-]+)?\s*)*\s*\/?\s*>", 
+            @"<\s*([a-z]+\b)\s*(?>(([a-z-]+)\s*=\s*(?:(['""])(.*?)\4)|[a-z0-9-]+)?\s*)*\s*\/?\s*>",
             RegexOptions.IgnoreCase | RegexOptions.Multiline | RegexOptions.Compiled);
 
         private string ExtractTitle()
@@ -184,7 +184,7 @@ namespace NeoSmart.UrlPreview
                 Debug.WriteLine("Invalid preview URL " + url);
                 return false;
             }
-            
+
             try
             {
                 using (var request = new HttpClient())

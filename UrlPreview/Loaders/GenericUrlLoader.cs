@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -31,8 +31,13 @@ namespace NeoSmart.UrlPreview.Loaders
                 return Task.FromResult(matches[0].GetAttributeValue("content", null));
             }
 
+<<<<<<< HEAD
             // Otherwise revert to the HTML title
             return Task.FromResult(_html.HtmlTitle);
+=======
+            // Otherwise
+            return _html.HtmlTitle;
+>>>>>>> Fix formatting
         }
 
         public override async Task<string> ExtractThumbnailAsync()
