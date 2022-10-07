@@ -18,9 +18,16 @@ namespace NeoSmart.UrlPreview
         /// <summary>
         /// This is a URI because URI encoding can differ but the URL can ultimately be the same
         /// </summary>
-        public Uri RequestUri;
-        public HttpMethod Method;
-        public SortedSet<KeyValuePair<string, IEnumerable<string>>> Headers;
+        public Uri RequestUri { get; private set; }
+        public HttpMethod Method { get; private set; }
+        public SortedSet<KeyValuePair<string, IEnumerable<string>>> Headers { get; private set; }
+
+        private UniqueRequest()
+        {
+            RequestUri = null!;
+            Method = null!;
+            Headers = null!;
+        }
 
         public override int GetHashCode()
         {

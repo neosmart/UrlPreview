@@ -14,8 +14,8 @@ namespace NeoSmart.UrlPreview
             Html = html;
         }
 
-        public abstract Task<string> ExtractPageTitleAsync();
-        public abstract Task<string> ExtractThumbnailAsync();
-        public abstract Task<string> ExtractPageSnippet();
+        public abstract Task<string?> ExtractPageTitleAsync();
+        public abstract Task<string?> ExtractThumbnailAsync();
+        public abstract Task<string?> ExtractPageSnippet();
     }
 }

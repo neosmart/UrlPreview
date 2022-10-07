@@ -22,7 +22,7 @@ namespace NeoSmart.UrlPreview
             }
         }
 
-        public static async Task<HttpResponseMessage> GetAsyncRedirect(this HttpClient client, string url,
+        public static async Task<HttpResponseMessage?> GetAsyncRedirect(this HttpClient client, string url,
             CancellationToken cancel = default)
         {
             if (Uri.TryCreate(url, UriKind.Absolute, out var uri))

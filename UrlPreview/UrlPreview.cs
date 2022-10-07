@@ -10,9 +10,11 @@ namespace NeoSmart.UrlPreview
     {
         private static readonly string[] LegalSchemes = { "http", "https" };
 
-        public Uri Uri { get; private set; }
+        public Uri Uri { get; private set; } = null!;
         public string Url => Uri.ToString();
-        public string ContentType { get; private set; }
+        public string? ContentType { get; private set; }
+
+        public string? UserAgent { get; set; }
 
         public UrlPreview()
         {
@@ -35,6 +37,10 @@ namespace NeoSmart.UrlPreview
         public async Task<PreviewResult> GetPreviewAsync(CancellationToken cancel = default)
         {
             var html = new Html();
+            if (UserAgent is string userAgent)
+            {
+                html.UserAgent = userAgent;
+            }
             await html.LoadAsync(Uri, cancel);
             cancel.ThrowIfCancellationRequested();
 

@@ -13,15 +13,15 @@ namespace NeoSmart.UrlPreview
     {
         private static readonly string[] LegalSchemes = { "http", "https" };
 
-        public Uri Uri { get; private set; }
-        public string UnparsedHtml { get; private set; }
-        public string HtmlTitle { get; private set; }
+        public Uri Uri { get; private set; } = null!;
+        public string? UnparsedHtml { get; private set; }
+        public string? HtmlTitle { get; private set; }
 
-        private const string UserAgent = @"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36";
+        public string UserAgent { get; set; } = @"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36";
         private const uint MaxRead = 1024 * 1024;
-        public string ContentType { get; private set; }
-        private HtmlAgilityPack.HtmlDocument _document;
-        public HtmlAgilityPack.HtmlNode Document => _document?.DocumentNode;
+        public string? ContentType { get; private set; }
+        private HtmlAgilityPack.HtmlDocument? _document;
+        public HtmlAgilityPack.HtmlNode? Document => _document?.DocumentNode;
 
         public async Task<bool> LoadAsync(Uri uri, CancellationToken cancel = default)
         {
@@ -107,11 +107,11 @@ namespace NeoSmart.UrlPreview
 
         private string ExtractTitle()
         {
-            var title = _document.DocumentNode.SelectSingleNode("//title");
+            var title = _document?.DocumentNode.SelectSingleNode("//title");
             return title?.InnerText ?? string.Empty;
         }
 
-        public Uri MakeProperUrl(string url)
+        public Uri? MakeProperUrl(string url)
         {
             if (Uri.TryCreate(url, UriKind.RelativeOrAbsolute, out var uri))
             {
@@ -128,8 +128,13 @@ namespace NeoSmart.UrlPreview
             return null;
         }
 
-        public async Task<bool> IsValidUrlAsync(string url, CancellationToken cancel = default)
+        public async Task<bool> IsValidUrlAsync(string? url, CancellationToken cancel = default)
         {
+            if (url is null)
+            {
+                return false;
+            }
+
             if (!Uri.TryCreate(url, UriKind.Absolute, out var uri) || !LegalSchemes.Contains(uri.Scheme.ToLower()))
             {
                 Debug.WriteLine("Invalid preview URL " + url);
@@ -141,7 +146,7 @@ namespace NeoSmart.UrlPreview
                 var request = new HttpClient();
                 using (var response = await request.GetAsyncRedirect(url, cancel))
                 {
-                    return response.IsSuccessStatusCode;
+                    return response is not null && response.IsSuccessStatusCode;
                 }
             }
             catch
