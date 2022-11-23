@@ -1,11 +1,11 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFrameworks>net45;netstandard1.3</TargetFrameworks>
 		<AssemblyName>NeoSmart.UrlPreview</AssemblyName>
 		<RootNamespace>NeoSmart.UrlPreview</RootNamespace>
 		<PackageId>UrlPreview</PackageId>
-		<Version>1.2.0</Version>
+		<Version>1.3.0</Version>
 		<Authors>Mahmoud Al-Qudsi</Authors>
 		<Company>NeoSmart Technologies</Company>
 		<Product>UrlPreview</Product>
