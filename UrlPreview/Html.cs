@@ -18,6 +18,15 @@ namespace NeoSmart.UrlPreview
         public string? HtmlTitle { get; private set; }
 
         public string UserAgent { get; set; } = @"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36";
+        private Uri? _referrer;
+        /// <summary>
+        /// Defaults to the provided Uri with the local fragment stripped (if any), unless overriden.
+        /// </summary>
+        public Uri Referrer
+        {
+            get => _referrer ?? StripFragment(Uri);
+            set => _referrer = value;
+        }
         private const uint MaxRead = 1024 * 1024;
         public string? ContentType { get; private set; }
         private HtmlAgilityPack.HtmlDocument? _document;
@@ -43,7 +52,7 @@ namespace NeoSmart.UrlPreview
                     wc.DefaultRequestHeaders.Add("Accept-Language", "en-US,en;q=0.8,fr;q=0.6,de;q=0.4");
                     wc.DefaultRequestHeaders.Add("Cache-Control", "max-age=0");
                     wc.DefaultRequestHeaders.Add("DNT", "1");
-                    wc.DefaultRequestHeaders.Add("Referer", $"{uri.Scheme}://{uri.Host}/");
+                    wc.DefaultRequestHeaders.Add("Referer", Referrer.ToString());
                     wc.DefaultRequestHeaders.Add("User-Agent", UserAgent);
                     wc.DefaultRequestHeaders.Add("Upgrade-Insecure-Requests", "1");
 
@@ -154,6 +163,17 @@ namespace NeoSmart.UrlPreview
                 Debug.WriteLine("Invalid preview URL " + url);
                 return false;
             }
+        }
+
+        private static Uri StripFragment(in Uri uri)
+        {
+            var url = uri.ToString();
+            var hashIndex = url.IndexOf('#');
+            if (hashIndex == -1)
+            {
+                return uri;
+            }
+            return new Uri(url.Substring(0, hashIndex));
         }
     }
 }

@@ -14,7 +14,15 @@ namespace NeoSmart.UrlPreview
         public string Url => Uri.ToString();
         public string? ContentType { get; private set; }
 
+        // Begin user-settable parameters to modify preview state/behavior
+        /// <summary>
+        /// If set, overrides the default UrlPreview user agent used to make the GET request.
+        /// </summary>
         public string? UserAgent { get; set; }
+        /// <summary>
+        /// If set, overrides the default UrlPreview HTTP <c>Referer</c> header in the GET request.
+        /// </summary>
+        public Uri? Referrer { get; set; }
 
         public UrlPreview()
         {
@@ -40,6 +48,10 @@ namespace NeoSmart.UrlPreview
             if (UserAgent is string userAgent)
             {
                 html.UserAgent = userAgent;
+            }
+            if (Referrer is Uri referrer)
+            {
+                html.Referrer = referrer;
             }
             await html.LoadAsync(Uri, cancel);
             cancel.ThrowIfCancellationRequested();
